@@ -8,7 +8,7 @@ struct ContentView: View {
    Color.netflixDark.ignoresSafeArea()
     
      
-     VStack(spacing: 50){
+     VStack(spacing: 20){
          
          Group {
              switch selectedTab {

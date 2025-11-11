@@ -7,6 +7,7 @@
 import SwiftUI
 
 struct HomeView: View {
+    @StateObject private var bannerViewModel = HomeBannerViewModel()
 
     var body: some View {
         VStack(spacing: 30) {
@@ -20,14 +21,19 @@ struct HomeView: View {
             ScrollView {
                 VStack(spacing: 70) {
                     
-                    // ✅ Hero Banner (Senin kartın çalışıyor)
-                    HomeBannerView(
-                        poster: "hounted_hotel",
-                        title: "NEW SEASON",
-                        description: "Yeni sezonda korku dolu anlar!"
-                    )
+                   
+                    if let item = bannerViewModel.item {
+                        HomeBannerView(item: item)
+                    } else {
+                        // Placeholder while loading
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(height: 420)
+                            .redacted(reason: .placeholder)
+                           
+                    }
                     
-                    // ✅ Netflix Rows (API ile dinamik poster)
+                   
                     NetflixExclusiveRow(title: "Only on Netflix")
                     NetflixExclusiveRow(title: "Popular on Netflix")
                     NetflixExclusiveRow(title: "Trending Now")
@@ -36,6 +42,9 @@ struct HomeView: View {
             }
         }
         .background(Color.netflixDark.ignoresSafeArea())
+        .task {
+            await bannerViewModel.load()
+        }
     }
 }
 

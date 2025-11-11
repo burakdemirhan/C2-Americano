@@ -8,86 +8,132 @@ import SwiftUI
 
 struct HomeBannerView: View {
     
-    let poster: String
-    let title: String
-    let description: String
+    let item: HotItem
+    @State private var isImageLoaded = false
+    @State private var isPressedPlay = false
+    
+    // Kart oranı: poster hissi için 2:3. 16:9 istersen 16/9 yapabilirsin.
+    private let cardAspectRatio: CGFloat = 2.0 / 3.0
+    private let cardCornerRadius: CGFloat = 16
     
     var body: some View {
-           
-           
-        ZStack(alignment: .bottom) {
-            
-            
-            Image(poster)
-                .resizable()
-                .scaledToFill()
-                .blur(radius: 40)
-                .opacity(0.35)
-                .shadow(radius: 20)
-                .clipShape(RoundedRectangle(cornerRadius: 22))
-                .ignoresSafeArea()
-            
-            Color.yellow
-                .opacity(0.45)
-                .ignoresSafeArea()
-  
-            VStack(spacing: 16) {
-                
-                Image(poster)
-                  .resizable()
-                  .scaledToFill()
-                    .frame(width: 260, height: 360)
-                     .clipShape(RoundedRectangle(cornerRadius: 22))
-                
-               
-                Text(title)
-                    .font(.headline.bold())
-                    .foregroundColor(.white)
-                
-               
-                Text(description)
-                    .font(.subheadline)
-                    .foregroundColor(.white.opacity(0.9))
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
-                
-              
-                HStack(spacing: 20) {
-                    
-              
-                    Button(action: {}) {
-                        HStack {
-                            Image(systemName: "play.fill")
-                            Text("Play")
-                                .fontWeight(.bold)
+        VStack(alignment: .center, spacing: 16) {
+            ZStack(alignment: .bottomLeading) {
+                // Poster görüntü
+                AsyncImage(url: posterURL) { image in
+                    image
+                        .resizable()
+                        .scaledToFill()
+                        .opacity(isImageLoaded ? 1 : 0)
+                        .onAppear {
+                            withAnimation(.easeOut(duration: 0.35)) {
+                                isImageLoaded = true
+                            }
                         }
-                        .foregroundColor(.black)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 10)
-                        .background(Color.white)
-                        .cornerRadius(4)
-                    }
-                    
-                    
-                    Button(action: {}) {
-                        HStack {
-                            Image(systemName: "plus")
-                            Text("My List")
-                                .fontWeight(.bold)
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 18)
-                        .padding(.vertical, 10)
-                        .background(Color.gray.opacity(0.3))
-                        .cornerRadius(4)
-                    }
+                } placeholder: {
+                    Rectangle()
+                        .fill(Color.gray.opacity(0.25))
+                        .redacted(reason: .placeholder)
                 }
-                .padding(.bottom, 30)
+                .clipShape(RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous))
+                
+                // Kart içi alt gradient (okunabilirlik)
+                LinearGradient(
+                    gradient: Gradient(colors: [
+                        .clear,
+                        .black.opacity(0.15),
+                        .black.opacity(0.55),
+                        .black.opacity(0.85)
+                    ]),
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+                .clipShape(RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous))
+                .allowsHitTesting(false)
+                
+                // İçerik overlay (başlık + overview + butonlar)
+                VStack(alignment: .leading, spacing: 10) {
+                    Text(item.title)
+                        .font(.system(size: 20, weight: .heavy))
+                        .foregroundColor(.white)
+                        .lineLimit(2)
+                        .shadow(color: .black.opacity(0.6), radius: 6, x: 0, y: 3)
+                    
+                    if !item.overview.isEmpty {
+                        Text(item.overview)
+                            .font(.footnote)
+                            .foregroundColor(.white.opacity(0.9))
+                            .lineLimit(2) // kart üzerinde kısa tutuyoruz
+                            .shadow(color: .black.opacity(0.5), radius: 5, x: 0, y: 2)
+                    }
+                    
+                    HStack(spacing: 10) {
+                        Button {
+                            withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                                isPressedPlay.toggle()
+                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                                isPressedPlay = false
+                            }
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "play.fill")
+                                    .font(.subheadline.bold())
+                                Text("Play")
+                                    .font(.subheadline.weight(.semibold))
+                            }
+                            .foregroundColor(.black)
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(Color.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .shadow(color: .black.opacity(0.25), radius: 8, x: 0, y: 4)
+                        }
+                        
+                        Button {
+                            // My List action
+                        } label: {
+                            HStack(spacing: 6) {
+                                Image(systemName: "plus")
+                                    .font(.subheadline.bold())
+                                Text("My List")
+                                    .font(.subheadline.weight(.semibold))
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 14)
+                            .padding(.vertical, 8)
+                            .background(Color.white.opacity(0.14))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                    .stroke(Color.white.opacity(0.22), lineWidth: 1)
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                        }
+                    }
+                    .padding(.top, 2)
+                }
+                .padding(.horizontal, 14)
+                .padding(.bottom, 12)
             }
+            .aspectRatio(cardAspectRatio, contentMode: .fit)
+            .frame(maxWidth: 340) // Kart genişliği
+            .overlay(
+                RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
+                    .stroke(Color.white.opacity(0.06), lineWidth: 1)
+            )
+            .shadow(color: .black.opacity(0.45), radius: 20, x: 0, y: 14)
+            .frame(maxWidth: .infinity, alignment: .center)
         }
-        .frame(height: 480)
-        
+        .padding(.vertical, 12)
+        .frame(maxWidth: .infinity)
+        .background(Color.clear)
+    }
+    
+    private var posterURL: URL? {
+        if let path = item.posterPath {
+            // Kartta w500 yeterli; istersen w780
+            return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
+        }
+        return nil
     }
 }
-
-
