@@ -6,8 +6,12 @@
 //
 import SwiftUI
 
+
 @main
 struct C2_AmericanoApp: App {
+    
+    @State private var showMainView = false
+    
     init() {
         let appearance = UITabBarAppearance()
         appearance.configureWithOpaqueBackground()
@@ -22,7 +26,13 @@ struct C2_AmericanoApp: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView()  
+            ZStack {
+                if showMainView {
+                    ContentView()
+                } else {
+                    LaunchScreenView(showMainView: $showMainView)  
+                }
+            }
         }
     }
 }
