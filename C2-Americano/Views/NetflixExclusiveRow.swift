@@ -61,4 +61,11 @@ struct NetflixExclusiveRow: View {
         guard let path = poster.posterPath else { return nil }
         return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
     }
+    
+    struct ScrollOffsetKey: PreferenceKey {
+        static var defaultValue: CGFloat = 0
+        static func reduce(value: inout CGFloat, nextValue: () -> CGFloat) {
+            value = nextValue()
+        }
+    }
 }

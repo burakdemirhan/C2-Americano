@@ -1,47 +1,61 @@
-//
-//  HomeViews.swift
-//  C2-Americano
-//
-//  Created by Burak Demirhan on 05/11/25.
-//
+
+
+
+
 import SwiftUI
 
 struct HomeView: View {
     @StateObject private var bannerViewModel = HomeBannerViewModel()
-
+    @State private var hideHeader = false
+    
+    let continueWatching = [
+        ContinueWatchingItem(image: "poster1", progress: 0.4),
+        ContinueWatchingItem(image: "poster2", progress: 0.8),
+        ContinueWatchingItem(image: "poster3", progress: 0.2)
+    ]
+    
     var body: some View {
-        VStack(spacing: 30) {
-            
-            // ✅ Top Navigation
-            HomeNavigationBar(userName: "Burak")
-            
-            // ✅ Category Tabs
-            CategoryTabsView()
-            
-            ScrollView {
-                VStack(spacing: 70) {
-                    
-                   
-                    if let item = bannerViewModel.item {
-                        HomeBannerView(item: item)
-                    } else {
-                        // Placeholder while loading
-                        Rectangle()
-                            .fill(Color.gray.opacity(0.3))
-                            .frame(height: 420)
-                            .redacted(reason: .placeholder)
-                           
+        GeometryReader { outerGeo in
+            VStack(spacing: 0) {
+                
+                HomeNavigationBar(userName: "Burak")
+                
+                CategoryTabsView(hideHeader: $hideHeader)
+                    .zIndex(1)
+                
+                ScrollView {
+                    VStack(spacing: 70) {
+                        
+                        
+                        GeometryReader { geo in
+                            Color.clear
+                                .onChange(of: geo.frame(in: .global).minY) { newValue in
+                                    withAnimation(.easeInOut(duration: 0.25)) {
+                                        hideHeader = newValue < 80 // scroll aşağı
+                                    }
+                                }
+                        }
+                        .frame(height: 0)
+                        
+                        if let item = bannerViewModel.item {
+                            HomeBannerView(item: item)
+                        } else {
+                            Rectangle()
+                                .fill(Color.gray.opacity(0.3))
+                                .frame(height: 420)
+                                .redacted(reason: .placeholder)
+                        }
+                        
+                        NetflixExclusiveRow(title: "Only on Netflix")
+                        ContinueWatchingRow(items: continueWatching)
+                        NetflixExclusiveRow(title: "Popular on Netflix")
+                        NetflixExclusiveRow(title: "Trending Now")
                     }
-                    
-                   
-                    NetflixExclusiveRow(title: "Only on Netflix")
-                    NetflixExclusiveRow(title: "Popular on Netflix")
-                    NetflixExclusiveRow(title: "Trending Now")
+                    .padding(.bottom, 40)
                 }
-                .padding(.bottom, 40)
             }
+            .background(Color.netflixDark.ignoresSafeArea())
         }
-        .background(Color.netflixDark.ignoresSafeArea())
         .task {
             await bannerViewModel.load()
         }
