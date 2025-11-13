@@ -33,13 +33,13 @@ struct ContinueWatchingVerticalCard: View {
     let cardWidth: CGFloat = 130
     
     var body: some View {
-        let cardHeight = cardWidth * 1.7     // 🔸 dikey oran: yüksekliği genişliğin 1.7 katı
-        let posterHeight = cardHeight * 0.8  // 🔸 %80 poster
-        let bottomHeight = cardHeight * 0.2  // 🔸 %20 gri alt kısım
+        let cardHeight = cardWidth * 1.7
+        let posterHeight = cardHeight * 0.8
+        let bottomHeight = cardHeight * 0.2
         
         VStack(spacing: 0) {
             
-            // 🎞 Poster kısmı
+            
             Image(item.image)
                 .resizable()
                 .scaledToFill()
@@ -50,20 +50,21 @@ struct ContinueWatchingVerticalCard: View {
                         .stroke(Color.white.opacity(0.05), lineWidth: 1)
                 )
             
-            // 🔴 Progress bar
-            ZStack(alignment: .leading) {
-                Capsule()
-                    .fill(Color.gray.opacity(0.4))
-                    .frame(height: 3)
-                Capsule()
-                    .fill(Color.red)
-                    .frame(width: cardWidth * item.progress, height: 3)
+            
+            GeometryReader { geo in
+                ZStack(alignment: .leading) {
+                    Capsule()
+                        .fill(Color.gray.opacity(0.4))
+                        .frame(width: geo.size.width, height: 3)
+                    Capsule()
+                        .fill(Color.red)
+                        .frame(width: geo.size.width * item.progress, height: 3)
+                }
+                .frame(height: 3)
             }
-            .padding(.horizontal, 8)
+            .frame(height: 3)
             .padding(.top, 4)
-            
-            
-            HStack(spacing:8){
+            HStack(spacing:24){
                 Button(action: {}) {
                     Image(systemName: "info.circle")
                         .font(.system(size: 30))

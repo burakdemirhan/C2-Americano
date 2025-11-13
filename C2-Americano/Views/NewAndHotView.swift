@@ -11,6 +11,7 @@ struct NewAndHotView: View {
     
     @StateObject private var viewModel = NewAndHotViewModel()
     @State private var hideHeader = false
+    @State private var selectedCategory = "Series"
     
     var body: some View {
         GeometryReader { outerGeo in
@@ -20,7 +21,7 @@ struct NewAndHotView: View {
                 HomeNavigationBar(userName: "Burak")
                 
                 // 🔹 Series / Movies / Categories Bar
-                CategoryTabsView(hideHeader: $hideHeader)
+                CategoryTabsView(selected: $selectedCategory, hideHeader: $hideHeader)
                     .zIndex(1)
                 
                 // 🔹 İçerik ScrollView

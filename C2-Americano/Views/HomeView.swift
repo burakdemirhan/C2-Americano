@@ -7,6 +7,8 @@ import SwiftUI
 struct HomeView: View {
     @StateObject private var bannerViewModel = HomeBannerViewModel()
     @State private var hideHeader = false
+    @StateObject private var viewModel = HomeViewModel()
+    @State private var selectedCategory = "Series"
     
     let continueWatching = [
         ContinueWatchingItem(image: "poster1", progress: 0.4),
@@ -20,7 +22,7 @@ struct HomeView: View {
                 
                 HomeNavigationBar(userName: "Burak")
                 
-                CategoryTabsView(hideHeader: $hideHeader)
+                CategoryTabsView(selected: $selectedCategory, hideHeader: $hideHeader)
                     .zIndex(1)
                 
                 ScrollView {
@@ -57,7 +59,15 @@ struct HomeView: View {
             .background(Color.netflixDark.ignoresSafeArea())
         }
         .task {
+            
             await bannerViewModel.load()
+            await viewModel.load(category: selectedCategory)
+        }
+        .onChange(of: selectedCategory) { newValue in
+            
+            Task {
+                await viewModel.load(category: newValue)
+            }
         }
     }
 }

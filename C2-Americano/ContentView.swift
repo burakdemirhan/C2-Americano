@@ -8,7 +8,7 @@ struct ContentView: View {
         ZStack {
             
             if isAuthenticated {
-                // ✅ Başarılı doğrulama → Netflix ana ekranı
+                
                 VStack(spacing: 20) {
                     Group {
                         switch selectedTab {

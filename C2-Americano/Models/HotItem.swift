@@ -10,16 +10,18 @@ import SwiftUI
 
 struct HotItem: Identifiable, Decodable {
     let id: Int
-    let title: String
-    let overview: String
-    let posterPath: String?
-    let releaseDate: String?
+    let title: String?
+    let name: String?     
+    let overview: String?
+    let poster_path: String?
+
     
-    enum CodingKeys: String, CodingKey {
-        case id
-        case title = "original_title"
-        case overview
-        case posterPath = "poster_path"
-        case releaseDate = "release_date"
+    var displayTitle: String {
+        title ?? name ?? "Unknown Title"
+    }
+
+    var posterURL: URL? {
+        guard let path = poster_path else { return nil }
+        return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
     }
 }

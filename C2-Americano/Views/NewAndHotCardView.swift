@@ -8,7 +8,7 @@ struct NewAndHotCardView: View {
             
             
             ZStack {
-                AsyncImage(url: posterURL) { image in
+                AsyncImage(url: item.posterURL) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -24,37 +24,32 @@ struct NewAndHotCardView: View {
                 )
             }
             .padding(.horizontal)
- 
+            
+            // 🧾 Başlık
             VStack(alignment: .leading, spacing: 4) {
-                Text(item.title)
+                Text(item.displayTitle)
                     .font(.headline.bold())
                     .foregroundColor(.white)
-                
-                
             }
             .padding(.horizontal, 20)
             
-            
-            
+           
             HStack(spacing: 34) {
-                
-                
                 Button(action: {}) {
                     VStack(spacing: 6) {
                         Image(systemName: "bell")
                             .font(.title3)
-                        Text("Hatırlat")
+                        Text("Remind")
                             .font(.caption)
                     }
                     .foregroundColor(.white)
                 }
-                
-                
+
                 Button(action: {}) {
                     VStack(spacing: 6) {
                         Image(systemName: "info.circle")
                             .font(.title3)
-                        Text("Bilgi")
+                        Text("Info")
                             .font(.caption)
                     }
                     .foregroundColor(.white)
@@ -64,9 +59,5 @@ struct NewAndHotCardView: View {
             .padding(.bottom, 20)
         }
         .padding(.top, 10)
-    }
-    private var posterURL: URL? {
-        guard let path = item.posterPath else { return nil }
-        return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
     }
 }

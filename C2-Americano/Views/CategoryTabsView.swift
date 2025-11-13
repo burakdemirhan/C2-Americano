@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct CategoryTabsView: View {
-    @State private var selected = "Series"
+    @Binding var selected: String
     @Binding var hideHeader: Bool
     
     let tabs = ["Series", "Movies", "Categories"]
@@ -37,11 +37,7 @@ struct CategoryTabsView: View {
         .padding(.vertical, 6)
         .background(Color.netflixDark.opacity(0.95))
         .opacity(hideHeader ? 0 : 1)
-        .offset(y: hideHeader ? -20 : 0)       
+        .offset(y: hideHeader ? -20 : 0)
         .animation(.easeInOut(duration: 0.25), value: hideHeader)
     }
-}
-
-#Preview {
-    CategoryTabsView(hideHeader: .constant(false))
 }

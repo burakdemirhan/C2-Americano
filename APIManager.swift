@@ -47,5 +47,25 @@ class APIManager{
     }
     
     
+    func fetchPopularMovies() async throws -> [HotItem] {
+           let urlString = "https://api.themoviedb.org/3/movie/popular?api_key=\(apiKey)&language=tr-TR&page=1"
+           guard let url = URL(string: urlString) else { throw URLError(.badURL) }
+           
+           let (data, _) = try await URLSession.shared.data(from: url)
+           let decoded = try JSONDecoder().decode(HotResponse.self, from: data)
+           return decoded.results
+       }
+    
+       
+       func fetchPopularSeries() async throws -> [HotItem] {
+           let urlString = "https://api.themoviedb.org/3/tv/popular?api_key=\(apiKey)&language=tr-TR&page=1"
+           guard let url = URL(string: urlString) else { throw URLError(.badURL) }
+           
+           let (data, _) = try await URLSession.shared.data(from: url)
+           let decoded = try JSONDecoder().decode(HotResponse.self, from: data)
+           return decoded.results
+       }
+    
+    
     
 }

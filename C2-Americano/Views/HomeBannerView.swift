@@ -7,20 +7,19 @@
 import SwiftUI
 
 struct HomeBannerView: View {
-    
     let item: HotItem
     @State private var isImageLoaded = false
     @State private var isPressedPlay = false
     
-    // Kart oranı: poster hissi için 2:3. 16:9 istersen 16/9 yapabilirsin.
     private let cardAspectRatio: CGFloat = 2.0 / 3.0
     private let cardCornerRadius: CGFloat = 16
     
     var body: some View {
         VStack(alignment: .center, spacing: 16) {
             ZStack(alignment: .bottomLeading) {
-                // Poster görüntü
-                AsyncImage(url: posterURL) { image in
+                
+                // 🎬 Poster
+                AsyncImage(url: item.posterURL) { image in
                     image
                         .resizable()
                         .scaledToFill()
@@ -37,7 +36,7 @@ struct HomeBannerView: View {
                 }
                 .clipShape(RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous))
                 
-                // Kart içi alt gradient (okunabilirlik)
+                // 🔹 Alt kısım gradient
                 LinearGradient(
                     gradient: Gradient(colors: [
                         .clear,
@@ -51,19 +50,19 @@ struct HomeBannerView: View {
                 .clipShape(RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous))
                 .allowsHitTesting(false)
                 
-                // İçerik overlay (başlık + overview + butonlar)
+                
                 VStack(alignment: .leading, spacing: 10) {
-                    Text(item.title)
+                    Text(item.displayTitle)
                         .font(.system(size: 20, weight: .heavy))
                         .foregroundColor(.white)
                         .lineLimit(2)
                         .shadow(color: .black.opacity(0.6), radius: 6, x: 0, y: 3)
                     
-                    if !item.overview.isEmpty {
-                        Text(item.overview)
+                    if let overview = item.overview, !overview.isEmpty {
+                        Text(overview)
                             .font(.footnote)
                             .foregroundColor(.white.opacity(0.9))
-                            .lineLimit(2) // kart üzerinde kısa tutuyoruz
+                            .lineLimit(2)
                             .shadow(color: .black.opacity(0.5), radius: 5, x: 0, y: 2)
                     }
                     
@@ -116,7 +115,7 @@ struct HomeBannerView: View {
                 .padding(.bottom, 12)
             }
             .aspectRatio(cardAspectRatio, contentMode: .fit)
-            .frame(maxWidth: 340) // Kart genişliği
+            .frame(maxWidth: 340)
             .overlay(
                 RoundedRectangle(cornerRadius: cardCornerRadius, style: .continuous)
                     .stroke(Color.white.opacity(0.06), lineWidth: 1)
@@ -127,13 +126,5 @@ struct HomeBannerView: View {
         .padding(.vertical, 12)
         .frame(maxWidth: .infinity)
         .background(Color.clear)
-    }
-    
-    private var posterURL: URL? {
-        if let path = item.posterPath {
-            // Kartta w500 yeterli; istersen w780
-            return URL(string: "https://image.tmdb.org/t/p/w500\(path)")
-        }
-        return nil
     }
 }
