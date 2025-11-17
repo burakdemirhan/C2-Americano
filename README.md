@@ -12,7 +12,7 @@ A beautifully crafted Netflix-style iOS application built with SwiftUI, async/aw
 
 
 🚀 Features
-
+ 
 🔐 Face ID Authentication
 Secure login using LocalAuthentication
 Smooth transition animation on success
